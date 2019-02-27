@@ -121,9 +121,10 @@ if ( ! class_exists( 'Redux_Functions_Ex', false ) ) {
 		 * @return array|bool
 		 */
 		public static function is_inside_plugin( $file ) {
-			$plugin_basename = plugin_basename( $file );
+			$file            = self::wp_normalize_path( $file );
+			$plugin_basename = self::wp_normalize_path( plugin_basename( $file ) );
 
-			if ( '/' . $plugin_basename !== $file ) {
+			if ( $plugin_basename !== $file ) {
 				$slug = explode( '/', $plugin_basename );
 				$slug = $slug[0];
 
@@ -165,8 +166,12 @@ if ( ! class_exists( 'Redux_Functions_Ex', false ) ) {
 
 			$theme_paths = array_unique( $theme_paths );
 			$file_path   = self::wp_normalize_path( $file );
-			$filename    = explode( '/', $file );
-			$filename    = end( $filename );
+
+			$filename = explode( '\\', $file );
+
+			end( $filename );
+
+			$filename = prev( $filename );
 
 			foreach ( $theme_paths as $theme_path => $url ) {
 				$real_path = self::wp_normalize_path( realpath( $theme_path ) );
