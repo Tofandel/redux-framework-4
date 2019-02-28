@@ -129,7 +129,7 @@ if ( ! class_exists( 'Redux', false ) ) {
 			add_action( 'switch_theme', array( 'Redux', 'createRedux' ) );
 
 			if ( version_compare( PHP_VERSION, '5.5.0', '<' ) ) {
-				include_once Redux_Core::$dir . 'inc/lib/array_column.php';
+				include_once Redux_Core::$dir . 'inc/lib/array-column.php';
 			}
 		}
 
@@ -326,6 +326,8 @@ if ( ! class_exists( 'Redux', false ) ) {
 
 			$check = self::instance( $opt_name );
 
+			Redux_Functions_Ex::record_caller( $opt_name );
+
 			if ( isset( $check->api_has_run ) ) {
 				return;
 			}
@@ -362,7 +364,7 @@ if ( ! class_exists( 'Redux', false ) ) {
 			foreach ( self::$sections as $opt_name => $the_sections ) {
 				if ( ! empty( $the_sections ) ) {
 					if ( ! self::$init[ $opt_name ] ) {
-						self::load_redux( $opt_name );
+						self::loadRedux( $opt_name );
 					}
 				}
 			}
@@ -498,9 +500,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @deprecated No longer using camelCase naming convention.
 		 */
 		public static function setSections( $opt_name = '', $sections = array() ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::set_sections( $opt_name, $sections );
 		}
 
@@ -511,10 +514,13 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param array  $sections Section ID.
 		 */
 		public static function set_sections( $opt_name = '', $sections = array() ) {
-			if ( empty( $sections ) ) {
+			if ( empty( $sections ) || '' === $opt_name ) {
 				return;
 			}
+
 			self::check_opt_name( $opt_name );
+
+			Redux_Functions_Ex::record_caller( $opt_name );
 
 			if ( ! empty( $sections ) ) {
 				foreach ( $sections as $section ) {
@@ -562,9 +568,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @deprecated No longer using camelCase naming convention.
 		 */
 		public static function removeSection( $opt_name = '', $id = '', $fields = false ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::remove_section( $opt_name, $id, $fields );
 		}
 
@@ -576,8 +583,7 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param bool   $fields   Remove fields.
 		 */
 		public static function remove_section( $opt_name = '', $id = '', $fields = false ) {
-			if ( ! empty( $opt_name ) && ! empty( $id ) ) {
-
+			if ( '' !== $opt_name && '' !== $id ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 
 				if ( isset( self::$sections[ $opt_name ][ $id ] ) ) {
@@ -616,9 +622,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param array  $section  Section data.
 		 */
 		public static function setSection( $opt_name = '', $section = array() ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::set_section( $opt_name, $section );
 		}
 
@@ -629,7 +636,7 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param array  $section  Section data.
 		 */
 		public static function set_section( $opt_name = '', $section = array() ) {
-			if ( empty( $section ) ) {
+			if ( empty( $section ) || '' === $opt_name ) {
 				return;
 			}
 
@@ -695,9 +702,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @deprecated No longer using camelCase naming convention.
 		 */
 		public static function hideSection( $opt_name = '', $id = '', $hide = true ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::hide_section( $opt_name, $id, $hide );
 		}
 
@@ -711,8 +719,9 @@ if ( ! class_exists( 'Redux', false ) ) {
 		public static function hide_section( $opt_name = '', $id = '', $hide = true ) {
 			self::check_opt_name( $opt_name );
 
-			if ( ! empty( $opt_name ) && ! empty( $id ) ) {
+			if ( '' !== $opt_name && '' !== $id ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
+
 				if ( isset( self::$sections[ $opt_name ][ $id ] ) ) {
 					self::$sections[ $opt_name ][ $id ]['hidden'] = $hide;
 				}
@@ -749,7 +758,6 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @return bool
 		 */
 		public static function getField( $opt_name = '', $id = '' ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			Redux_Functions_Ex::record_caller( $opt_name );
 			return self::get_field( $opt_name, $id );
 		}
 
@@ -779,9 +787,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param bool   $hide     Set hide/show.
 		 */
 		public static function hideField( $opt_name = '', $id = '', $hide = true ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::hide_field( $opt_name, $id, $hide );
 		}
 
@@ -795,7 +804,7 @@ if ( ! class_exists( 'Redux', false ) ) {
 		public static function hide_field( $opt_name = '', $id = '', $hide = true ) {
 			self::check_opt_name( $opt_name );
 
-			if ( ! empty( $opt_name ) && ! empty( $id ) ) {
+			if ( '' !== $opt_name && '' !== $id ) {
 				if ( isset( self::$fields[ $opt_name ][ $id ] ) ) {
 					Redux_Functions_Ex::record_caller( $opt_name );
 
@@ -815,9 +824,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param array  $field    Field data.
 		 */
 		public static function setField( $opt_name = '', $field = array() ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::set_field( $opt_name, $field );
 		}
 
@@ -835,7 +845,7 @@ if ( ! class_exists( 'Redux', false ) ) {
 
 			Redux_Functions_Ex::record_caller( $opt_name );
 
-			if ( ! empty( $opt_name ) && is_array( $field ) && ! empty( $field ) ) {
+			if ( '' !== $opt_name && is_array( $field ) && ! empty( $field ) ) {
 				if ( ! isset( $field['priority'] ) ) {
 					$field['priority'] = self::get_priority( $opt_name, 'fields' );
 				}
@@ -856,9 +866,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @return bool
 		 */
 		public static function removeField( $opt_name = '', $id = '' ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			return self::remove_field( $opt_name, $id );
 		}
 
@@ -871,9 +882,7 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @return bool
 		 */
 		public static function remove_field( $opt_name = '', $id = '' ) {
-
-			if ( ! empty( $opt_name ) && ! empty( $id ) ) {
-
+			if ( '' !== $opt_name && '' !== $id ) {
 				self::check_opt_name( $opt_name );
 
 				Redux_Functions_Ex::record_caller( $opt_name );
@@ -909,9 +918,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @deprecated No longer using camelCase naming convention.
 		 */
 		public static function setHelpTab( $opt_name = '', $tab = array() ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::set_help_tab( $opt_name, $tab );
 		}
 
@@ -925,11 +935,12 @@ if ( ! class_exists( 'Redux', false ) ) {
 			if ( empty( $tab ) ) {
 				return;
 			}
+
 			self::check_opt_name( $opt_name );
 
 			Redux_Functions_Ex::record_caller( $opt_name );
 
-			if ( ! empty( $opt_name ) && ! empty( $tab ) ) {
+			if ( '' !== $opt_name && ! empty( $tab ) ) {
 				if ( ! isset( self::$args[ $opt_name ]['help_tabs'] ) ) {
 					self::$args[ $opt_name ]['help_tabs'] = array();
 				}
@@ -953,9 +964,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @deprecated No longer using camelCase naming convention.
 		 */
 		public static function setHelpSidebar( $opt_name = '', $content = '' ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::set_help_sidebar( $opt_name, $content );
 		}
 
@@ -966,16 +978,14 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param string $content  Content.
 		 */
 		public static function set_help_sidebar( $opt_name = '', $content = '' ) {
-			if ( empty( $content ) || empty( $opt_name ) ) {
+			if ( '' === $content || '' === $opt_name ) {
 				return;
 			}
 			self::check_opt_name( $opt_name );
 
 			Redux_Functions_Ex::record_caller( $opt_name );
 
-			if ( ! empty( $opt_name ) && ! empty( $content ) ) {
-				self::$args[ $opt_name ]['help_sidebar'] = $content;
-			}
+			self::$args[ $opt_name ]['help_sidebar'] = $content;
 		}
 
 		/**
@@ -987,9 +997,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @deprecated No longer using camelCase naming convention.
 		 */
 		public static function setArgs( $opt_name = '', $args = array() ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::set_args( $opt_name, $args );
 		}
 
@@ -1000,14 +1011,15 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param array  $args     Argument data.
 		 */
 		public static function set_args( $opt_name = '', $args = array() ) {
-			if ( empty( $args ) || empty( $opt_name ) ) {
+			if ( empty( $args ) || '' === $opt_name ) {
 				return;
 			}
+
 			self::check_opt_name( $opt_name );
 
 			Redux_Functions_Ex::record_caller( $opt_name );
 
-			if ( ! empty( $opt_name ) && ! empty( $args ) && is_array( $args ) ) {
+			if ( '' !== $opt_name && ! empty( $args ) && is_array( $args ) ) {
 				if ( isset( self::$args[ $opt_name ] ) && isset( self::$args[ $opt_name ]['clearArgs'] ) ) {
 					self::$args[ $opt_name ] = array();
 				}
@@ -1022,7 +1034,7 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param string $arg      Args data.
 		 */
 		public static function set_developer( $opt_name = '', $arg = '' ) {
-			if ( empty( $arg ) || empty( $opt_name ) ) {
+			if ( empty( $arg ) || '' === $opt_name ) {
 				return;
 			}
 
@@ -1059,7 +1071,6 @@ if ( ! class_exists( 'Redux', false ) ) {
 			if ( ! empty( $opt_name ) && ! empty( self::$args[ $opt_name ] ) ) {
 				return self::$args[ $opt_name ];
 			}
-			return null;
 		}
 
 		/**
@@ -1143,9 +1154,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @return bool
 		 */
 		public static function setOption( $opt_name = '', $key = '', $option = '' ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			return self::set_option( $opt_name, $key, $option );
 		}
 
@@ -1159,14 +1171,15 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @return bool
 		 */
 		public static function set_option( $opt_name = '', $key = '', $option = '' ) {
-			if ( empty( $key ) ) {
+			if ( '' === $key ) {
 				return false;
 			}
+
 			self::check_opt_name( $opt_name );
 
 			Redux_Functions_Ex::record_caller( $opt_name );
 
-			if ( ! empty( $opt_name ) && ! empty( $key ) ) {
+			if ( '' !== $opt_name && '' !== $key ) {
 				$redux         = get_option( $opt_name );
 				$redux[ $key ] = $option;
 
@@ -1197,29 +1210,34 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param string $opt_name Panel opt_name.
 		 */
 		public static function check_opt_name( $opt_name = '' ) {
-
 			if ( empty( $opt_name ) || is_array( $opt_name ) ) {
 				return;
 			}
+
 			if ( ! isset( self::$sections[ $opt_name ] ) ) {
 				self::$sections[ $opt_name ]             = array();
 				self::$priority[ $opt_name ]['sections'] = 1;
 			}
+
 			if ( ! isset( self::$args[ $opt_name ] ) ) {
 				self::$args[ $opt_name ]             = array();
 				self::$priority[ $opt_name ]['args'] = 1;
 			}
+
 			if ( ! isset( self::$fields[ $opt_name ] ) ) {
 				self::$fields[ $opt_name ]             = array();
 				self::$priority[ $opt_name ]['fields'] = 1;
 			}
+
 			if ( ! isset( self::$help[ $opt_name ] ) ) {
 				self::$help[ $opt_name ]             = array();
 				self::$priority[ $opt_name ]['help'] = 1;
 			}
+
 			if ( ! isset( self::$errors[ $opt_name ] ) ) {
 				self::$errors[ $opt_name ] = array();
 			}
+
 			if ( ! isset( self::$init[ $opt_name ] ) ) {
 				self::$init[ $opt_name ] = false;
 			}
@@ -1324,9 +1342,10 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @deprecated No longer using camelCase naming convention.
 		 */
 		public static function setExtensions( $opt_name, $path ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-			if ( ! empty( $opt_name ) ) {
+			if ( '' !== $opt_name ) {
 				Redux_Functions_Ex::record_caller( $opt_name );
 			}
+
 			self::set_extensions( $opt_name, $path );
 		}
 
@@ -1338,12 +1357,14 @@ if ( ! class_exists( 'Redux', false ) ) {
 		 * @param bool   $force    Make extension reload.
 		 */
 		public static function set_extensions( $opt_name, $path, $force = false ) {
-			if ( empty( $path ) || empty( $opt_name ) ) {
+			if ( '' === $path || '' === $opt_name ) {
 				return;
 			}
+
 			if ( version_compare( PHP_VERSION, '5.5.0', '<' ) ) {
 				include_once Redux_Core::$dir . 'inc/lib/array-column.php';
 			}
+
 			self::check_opt_name( $opt_name );
 
 			Redux_Functions_Ex::record_caller( $opt_name );
@@ -1372,7 +1393,7 @@ if ( ! class_exists( 'Redux', false ) ) {
 						}
 
 						if ( is_dir( $path . $folder ) ) {
-							self::set_extensions( $opt_name, $path . $folder, $force );
+							self::set_extensions( $opt_name, $path . $folder );
 						}
 					}
 				}
@@ -1445,8 +1466,8 @@ if ( ! class_exists( 'Redux', false ) ) {
 
 				if ( isset( $extension->extension_dir ) ) {
 					self::set_extensions( $opt_name, str_replace( $name, '', $extension->extension_dir ) );
-				} elseif ( isset( $extension->_extension_dir ) ) {
-					self::set_extensions( $opt_name, str_replace( $name, '', $extension->_extension_dir ) );
+				} elseif ( isset( $extension->extension_dir ) ) {
+					self::set_extensions( $opt_name, str_replace( $name, '', $extension->extension_dir ) );
 				}
 			}
 		}
@@ -1531,7 +1552,6 @@ if ( ! class_exists( 'Redux', false ) ) {
 				remove_action( 'admin_notices', array( Redux_Framework_Plugin::instance(), 'admin_notices' ) );
 			}
 		}
-
 	}
 
 	Redux::load();

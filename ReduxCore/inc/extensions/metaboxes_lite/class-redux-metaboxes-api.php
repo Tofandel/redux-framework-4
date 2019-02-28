@@ -81,6 +81,10 @@ if ( ! class_exists( 'Redux_Metaboxes' ) ) {
 		 * Class load.
 		 */
 		public static function load() {
+			if ( version_compare( PHP_VERSION, '5.5.0', '<' ) ) {
+				include_once Redux_Core::$dir . 'inc/lib/array-column.php';
+			}
+
 			add_action( 'init', array( 'Redux_Metaboxes', 'enqueue' ), 99 );
 		}
 
@@ -143,19 +147,21 @@ if ( ! class_exists( 'Redux_Metaboxes' ) ) {
 			if ( true === self::$has_run ) {
 				return;
 			}
+
 			if ( ! class_exists( 'ReduxFramework' ) ) {
 				echo '<div id="message" class="error"><p>Redux Framework is <strong>not installed</strong>. Please install it.</p></div>';
 
 				return;
 			}
-			foreach ( self::$boxes as $opt_name => $the_boxes ) {
 
+			foreach ( self::$boxes as $opt_name => $the_boxes ) {
 				if ( ! self::$init[ $opt_name ] ) {
 
 					// phpcs:ignore WordPress.NamingConventions.ValidHookName
 					add_action( 'redux/metaboxes/' . $opt_name . '/boxes', array( 'Redux_Metaboxes', 'addMetaboxes' ), 2 );
 				}
 			}
+
 			self::$has_run = true;
 		}
 
